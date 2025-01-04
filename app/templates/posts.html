@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Блог - Anonymous Web Blog</title>
+        <style>
+            body,
+            html {
+                font-family: Arial;
+            }
+        </style>
+        <script>
+            function pad(num) {return num < 10 ? '0' + num : num;}
+            async function fetchData() {
+                let uuid = window.location.pathname.slice(1);
+                let h1 = document.getElementById('name')
+                h1.textContent = 'Блог ' + uuid;
+                let response = await fetch('/api/get_posts/'+uuid, {method: 'GET'}) 
+                let json = await response.json();
+                if (response.status == 403) {
+                    alert(`Ошибка: ${json['error']}`)
+                } else {
+                    json = json.reverse()
+                    json.forEach(element => {
+                        var p = document.createElement('p')
+                        let date = new Date(element['timestamp'] * 1000)
+                        let formattedDate = 
+                            pad(date.getDate()) + '-' + 
+                            pad(date.getMonth() + 1) + '-' + 
+                            date.getFullYear() + ' ' + 
+                            pad(date.getHours()) + ':' + 
+                            pad(date.getMinutes()) + ':' + 
+                            pad(date.getSeconds());
+                        p.textContent = `[${formattedDate}] ${element['content']}`
+                        let div = document.getElementById('msgcontainer')
+                        div.appendChild(p)
+                    });
+                }
+            }
+            window.onload = function() {
+                fetchData();  // Когда страница загружена, выполняется запрос
+            };
+        </script>
+    </head>
+    <body>
+        <h1 id="name"></h1>
+        <div id="msgcontainer">
+            <p></p>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,19 @@
+services:
+  web: 
+    build: ./app
+    ports:
+      - 8000:8000
+    stop_signal: SIGINT
+    volumes:
+      - ./app:/app
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db 
+
+volumes:
+  mongo_data:

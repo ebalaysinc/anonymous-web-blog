@@ -1,0 +1,58 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    expose:
+      - 27017
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - back
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web:
+    build: ./app
+    restart: always
+    expose:
+      - 8000
+    command: uvicorn --host 0.0.0.0 app:app
+    networks:
+      - back
+    depends_on:
+      - mongo
+    volumes:
+      - ./app:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - back
+      - default
+    depends_on:
+      - web
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  back:
+    driver: bridge
+    enable_ipv6: false
+    internal: true
+
+volumes:
+  mongo_data:

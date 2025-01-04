@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Создание поста - Anonymous Web Blog</title>
+        <script>
+            async function sendPost() {
+                var keyArea = document.getElementById('key')
+                var textArea = document.getElementById('text')
+                let response = await fetch('/api/create_post', {
+                    method: 'POST',
+                    headers: {'Key': keyArea.value},
+                    body: textArea.value
+                })
+                if (response.status == 403) {
+                    let json = await response.json()
+                    alert(`Ошибка: ${json['error']}`)
+                } else {alert('Пост успешно создан.')}
+            }
+        </script>
+        <style>
+            body,
+            html {
+                height: 100%;
+                margin: 0;
+                position: relative;
+                font-family: Arial;
+                text-align: center;
+            }
+    
+            div {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h2>Создание поста</h2>
+            <label>Введите ключ от блога:</label><br>
+            <textarea id="key" rows="2" cols="48" style="resize: none; text-align: center; padding: 10px; margin: 6px;"></textarea>
+            <br>
+            <label>Введите сообщение:</label><br>
+            <textarea id="text" rows="8" cols="64" style="resize: none; text-align: center; padding: 10px; margin: 6px;"></textarea>
+            <br>
+            <button onclick="sendPost()">Отправить пост</button>
+        </div>
+    </body>
+</html>

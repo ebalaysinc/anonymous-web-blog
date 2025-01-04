@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Регистрация - Anonymous Web Blog</title>
+        <style>
+            body,
+            html {
+                height: 100%;
+                margin: 0;
+                position: relative;
+                font-family: Arial;
+                text-align: center;
+            }
+    
+            div {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        </style>
+        <script>
+            async function getKey() {
+                let response = await fetch('/api/register', {method: 'POST'})
+                let pElement = document.getElementById('uuidp1')
+                let pElement2 = document.getElementById('uuidp2')
+                let pElement3 = document.getElementById('uuidp3')
+                let json = await response.json()
+                pElement.textContent = `Ссылка на ваш блог: ${window.location.origin}/${json["uuid"]}`
+                pElement2.textContent = `Ключ от блога: ${json['key']}`
+                pElement3.textContent = `Не потеряйте эти данные!`
+            }
+        </script>
+    </head>
+    <body>
+        <div>
+            <h2>Регистрация</h2>
+            <button style="font-size: larger;" onclick="getKey()">Нажмите для получения ключа и UUID.</button>
+            <br>
+            <p id="uuidp1"></p>
+            <p id="uuidp2"></p>
+            <p id="uuidp3"></p>
+        </div>
+    </body>
+</html>
